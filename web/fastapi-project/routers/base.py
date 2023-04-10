@@ -54,7 +54,7 @@ def create_access_token(data: dict, expires_delta: timedelta|None = None):
 #     userdb = get_collection('user')
 #     userdb.find_one({'username':username})
 
-router = APIRouter(tags=['base'])
+router = APIRouter(tags=['base'],prefix='/api')
 
 @router.post('/token')
 def login(from_token:OAuth2PasswordRequestForm=Depends()):
