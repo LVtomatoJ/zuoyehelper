@@ -13,6 +13,7 @@
 </template>
 <script>
 import { useLoginStore } from '../stores/login'
+import { service } from '../stores/axios.js'
 
 export default {
     data() {
@@ -21,38 +22,32 @@ export default {
         }
     },
     methods: {
+
+        //登录操作
         handleSubmit(valid, { username, password }) {
             const store = useLoginStore()
             if (valid) {
-                let formData = new FormData();
-                formData.append("username", username);
-                formData.append("password", password);
-                fetch('http://127.0.0.1:8000/token', {
-                    method: 'POST',
-                    body: formData
+                service.post('/token', {
+                    'username': username,
+                    'password': password
+                }, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }).then(res => {
+                    const data = res.data
+                    if (data.code === 200) {
+                        this.$Message.success('登录成功,即将跳转主页');
+                        store.isLoggedIn=true
+                        store.jwt=data.access_token
+                        this.$router.push('/')
+                        
+                    } else {
+                        this.$Message.error('登录失败,' + 'code: ' + data.code + ' | message: ' + data.message);
+                    }
+                }).catch(function (error) {
+                    this.$Message.error('网络请求失败')
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.code == 200) {
-                            this.$Modal.info({
-                                title: '成功',
-                                content: '登录成功'
-                            });
-                            console.log(data)
-                            store.isLoggedIn = true
-                            store.jwt = data.access_token
-                        } else {
-                            this.$Modal.info({
-                                title: '错误',
-                                content: 'code: ' + data.code + ' | message: ' + data.message
-                            });
-                        }
-                    });
-
-                // this.$Modal.info({
-                //     title: '输入的内容如下：',
-                //     content: 'username: ' + username + ' | password: ' + password
-                // });
             }
         }
     }
@@ -60,7 +55,8 @@ export default {
 </script>
 <style>
 .demo-login {
-    width: 400px;
+    width: auto;
+    max-width: 400px;
     margin: 0 auto !important;
 }
 
