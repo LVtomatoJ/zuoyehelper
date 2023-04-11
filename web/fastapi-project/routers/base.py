@@ -1,11 +1,9 @@
 from datetime import datetime, timedelta
-from jose import JWTError, jwt
-from fastapi import APIRouter,Depends, FastAPI, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import jwt
+from fastapi import APIRouter,Depends ,status
+from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from ..db import get_collection
-from pymongo.collection import Collection
-import json
 from passlib.context import CryptContext
 from ..code import errorcode
 
@@ -56,7 +54,7 @@ def create_access_token(data: dict, expires_delta: timedelta|None = None):
 #     userdb = get_collection('user')
 #     userdb.find_one({'username':username})
 
-router = APIRouter(tags=['base'],prefix='/api')
+router = APIRouter(tags=['base'],prefix='')
 
 @router.post('/token')
 def login(from_token:OAuth2PasswordRequestForm=Depends()):

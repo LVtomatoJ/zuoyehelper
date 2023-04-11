@@ -1,5 +1,5 @@
 from fastapi import FastAPI,Depends
-from .routers import users,base
+from .routers import users,base,collect,public
 from fastapi.middleware.cors import CORSMiddleware
 import json
 from .config import WEB_IP,WEB_PORT
@@ -8,6 +8,8 @@ from .config import WEB_IP,WEB_PORT
 app = FastAPI()
 app.include_router(base.router)
 app.include_router(users.router)
+app.include_router(collect.router)
+app.include_router(public.router)
 
 
 
