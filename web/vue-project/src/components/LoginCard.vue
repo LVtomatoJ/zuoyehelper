@@ -14,6 +14,7 @@
 <script>
 import { useLoginStore } from '../stores/login'
 import { service } from '../stores/axios.js'
+import axios from 'axios'
 
 export default {
     data() {
@@ -27,7 +28,7 @@ export default {
         handleSubmit(valid, { username, password }) {
             const store = useLoginStore()
             if (valid) {
-                service.post('/token', {
+                axios.post(API_URI+'/token', {
                     'username': username,
                     'password': password
                 }, {
