@@ -58,11 +58,11 @@ def get_token_username(token: str = Depends(oauth2_scheme)) -> str:
     return username
 
 
-def check_collect_exist(collection_id: str) -> _DocumentType:
+def check_collect_exist(collect_id: str) -> _DocumentType:
     try:
         collectdb: Collection = get_collection('collect')
         result: _DocumentType = collectdb.find_one(
-            {'_id': ObjectId(collection_id)}
+            {'_id': ObjectId(collect_id)}
             )
         return result
     except:
@@ -71,7 +71,7 @@ def check_collect_exist(collection_id: str) -> _DocumentType:
             detail="收集表不存在"
         )
 #collect need模型
-class UploadData(dict):
+class UploadData(BaseModel):
     index:int
     name:str
     value:str
