@@ -5,6 +5,11 @@
 ## vite(生成前端单页面
 # 使用
 ## 后端
+### 构建python虚拟环境（venv）
+```
+python3 -m venv venv
+source venv/bin/activate
+```
 ### 安装 web/requirements.txt中所包含的库
 ```
 python3 -m pip install -r requirements.txt
