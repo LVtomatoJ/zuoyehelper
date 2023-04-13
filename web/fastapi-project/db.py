@@ -1,6 +1,5 @@
 from pymongo import MongoClient
 from pymongo.collection import Collection
-import json
 from .config import DB_IP,DB_PORT
 
 #创建数据库连接
