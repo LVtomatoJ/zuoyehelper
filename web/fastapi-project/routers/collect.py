@@ -33,11 +33,14 @@ def add_collect(collect:Collect,username:str = Depends(get_token_username)):
         collectdb = get_collection('collect')
         data = collect.dict()
         data['user_id'] = user_id
-        inserted_id = collectdb.insert_one(data)
+        inserted_id = collectdb.insert_one(data).inserted_id
         code = 200
     except Exception:
         code = 304
     finally:
-        return {'code':code,'message':errorcode[code]}
+        if code!=200:
+            return {'code':code,'message':errorcode[code]}
+        else:
+            return {'code':200,'message':inserted_id}
     
 

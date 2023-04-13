@@ -81,14 +81,24 @@ class Upload(BaseModel):
     filename:str
 
 def check_upload(formdata:Upload,collect:_DocumentType=Depends(check_collect_exist)):
+    #检查是否到期
+    endtime = collect.get('endtime')
+    if datetime.utcnow()>endtime:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="收集表已到期"
+        )
+
     #检查data格式
     need = collect.get('need')
     need = sorted(need,key=lambda a: a['index'])
+    formdata.data = map(dict,formdata.data)
+    
     data = sorted(formdata.data,key=lambda a: a['index'])
     flag = True
     if(len(need)==len(data)):
         for i in range(len(need)):
-            if need[i]['name']!=data[i]['name']:
+            if need[i]['name']!=data[i]['name'] or data[i]['value']=='':
                 flag=False
                 break
     else:

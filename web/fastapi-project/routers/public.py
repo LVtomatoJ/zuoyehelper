@@ -30,11 +30,10 @@ def get_collect(collect = Depends(check_collect_exist)):
 #上传文件记录,返回上传URL
 @router.post('/upload')
 def uploadfile(upload = Depends(check_upload)):
-
     try:
         uploaddb = get_collection('upload')
         result = uploaddb.insert_one(upload)
-        sign = get_upload_url(str(upload['collect_id'])+upload['filename'])
+        sign = get_upload_url(str(upload['collect_id'])+"/"+upload['filename'])
         code = 200
     except Exception as e:
         code = 305

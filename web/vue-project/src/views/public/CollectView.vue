@@ -28,7 +28,19 @@ onMounted(() => {
     <Exception type="404"/>
   </template>
   <template v-else-if="collect_exist===true">
-    collect {{ collect_id }}
-    <Collect :collect_data='collect_data'></Collect>
+
+      <div style="text-align: center;padding-top: 20px;">
+        <h1>作业帮收件箱</h1>
+      </div>
+    <div style="padding-top: 20px;">
+      <Row>
+        <Col span="4"></Col>
+        <Col span="16">
+          <Collect :collect_data='collect_data'></Collect>
+        </Col>
+        <Col span="4"></Col>
+    </Row>
+      
+  </div>
   </template>
 </template>
