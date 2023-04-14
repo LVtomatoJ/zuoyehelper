@@ -4,8 +4,9 @@
             <Col span="2">
             </Col>
             <Col span="20">
-            <Grid center square :border="false" :hover="true">
+            <Grid center square :border="true" :hover="true">
                 <GridItem @click="goAddCollectPage(0)">
+                    <Icon type="ios-appstore" />
                     单文件收集
                 </GridItem>
             </Grid>
