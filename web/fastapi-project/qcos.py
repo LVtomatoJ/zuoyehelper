@@ -21,7 +21,7 @@ config = CosConfig(Region=region, SecretId=secret_id, SecretKey=secret_key, Sche
 client = CosS3Client(config)
 
 
-def get_upload_url(key):
+def get_upload_url(key)->str:
     global bucket
     global expired
     url = client.get_presigned_url(
@@ -31,3 +31,10 @@ def get_upload_url(key):
         Expired=expired
     )
     return url
+
+def qcos_check_upload_exist(key)->bool:
+    global bucket
+    result = client.object_exists(
+        Bucket=bucket,
+        Key=key)
+    return result

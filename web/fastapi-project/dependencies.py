@@ -80,6 +80,7 @@ class Upload(BaseModel):
     data:list[UploadData]
     filename:str
 
+#检查upload内容是否合法
 def check_upload(formdata:Upload,collect:_DocumentType=Depends(check_collect_exist)):
     #检查是否到期
     endtime = collect.get('endtime')
@@ -128,3 +129,18 @@ def check_upload(formdata:Upload,collect:_DocumentType=Depends(check_collect_exi
     result['data'] = data
     result['status'] = 0
     return result
+
+#检查数据库中是否存在对应upload
+def check_upload_exist(filename:str,collect:_DocumentType=Depends(check_collect_exist))-> _DocumentType:
+    collect_id = collect.get('_id')
+    uploaddb: Collection = get_collection('upload')
+    upload = uploaddb.find_one({'collect_id':collect_id,'filename':filename})
+    if upload==None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="不存在上传数据"
+        )
+    else:
+        return upload
+
+    

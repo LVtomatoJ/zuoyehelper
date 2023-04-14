@@ -1,10 +1,10 @@
 from datetime import datetime
 from fastapi import APIRouter,Depends
 from pydantic import BaseModel
-from ..dependencies import check_collect_exist,check_upload
+from ..dependencies import check_collect_exist,check_upload,check_upload_exist
 from ..db import get_collection
 from ..code import errorcode
-from ..qcos import get_upload_url
+from ..qcos import get_upload_url,qcos_check_upload_exist
 
 router = APIRouter(prefix='/api/public',tags=['public'])
 
@@ -29,11 +29,11 @@ def get_collect(collect = Depends(check_collect_exist)):
 
 #上传文件记录,返回上传URL
 @router.post('/upload')
-def uploadfile(upload = Depends(check_upload)):
+def upload_file(uploaddata = Depends(check_upload)):
     try:
         uploaddb = get_collection('upload')
-        result = uploaddb.insert_one(upload)
-        sign = get_upload_url(str(upload['collect_id'])+"/"+upload['filename'])
+        result = uploaddb.insert_one(uploaddata)
+        sign = get_upload_url(str(uploaddata['collect_id'])+"/"+uploaddata['filename'])
         code = 200
     except Exception as e:
         code = 305
@@ -41,4 +41,21 @@ def uploadfile(upload = Depends(check_upload)):
         if code!=200:
             return {'code':code,'message':errorcode[code]}
         else:
-            return {'code':200,'message':sign}
+            return {'code':200,'message':sign,'filename':uploaddata['filename']}
+        
+@router.get('/check_upload')
+def update_upload_data(upload = Depends(check_upload_exist)):
+    filename = upload['filename']
+    collect_id = upload['collect_id']
+    key = str(collect_id)+'/'+filename
+    if qcos_check_upload_exist(key):
+        uploaddb = get_collection('upload')
+        result = uploaddb.update_one({'filename':filename,'collect_id':collect_id},{"$set":{'status':1}})
+        if result.modified_count!=1:
+            code =  307
+        else:
+
+            code = 200
+    else:
+        code = 306
+    return {'code':code,'message':errorcode[code]}
