@@ -5,6 +5,7 @@ from bson.objectid import ObjectId
 from ..dependencies import check_token,get_token_username
 from ..db import get_collection
 from ..code import errorcode
+from ..config import WEB_IP,WEB_PORT
 
 router = APIRouter(prefix='/api/collect',tags=['collect'],dependencies=[Depends(check_token)])
 
@@ -32,6 +33,7 @@ def add_collect(collect:Collect,username:str = Depends(get_token_username)):
         #添加到collect表
         collectdb = get_collection('collect')
         data = collect.dict()
+
         data['user_id'] = user_id
         inserted_id = collectdb.insert_one(data).inserted_id
         code = 200
@@ -41,6 +43,6 @@ def add_collect(collect:Collect,username:str = Depends(get_token_username)):
         if code!=200:
             return {'code':code,'message':errorcode[code]}
         else:
-            return {'code':200,'message':inserted_id}
+            return {'code':200,'message':f'http://'+WEB_IP+':'+str(WEB_PORT)+"/"+"public/collect"+'/'+str(inserted_id)}
     
 
