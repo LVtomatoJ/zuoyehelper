@@ -69,7 +69,7 @@ let endtime = new Date()
 type.value = ref(route.params.type)
 
 function copyurl(){
-    navigator.clipboard.writeText(upload_url);
+    navigator.clipboard.writeText(upload_url.value);
     ElMessage.success('链接复制成功')
 }
 function addNeed() {
