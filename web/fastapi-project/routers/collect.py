@@ -98,6 +98,10 @@ def check_zip_job(collect = Depends(check_collect_belong_user)):
     #获取job_id
     jobdb = get_collection('job')
     job = jobdb.find_one({'collect_id':collect['_id']})
+    if not job:
+        #job不存在
+        code = 311
+        return {'code':311,'message':errorcode[code]}
     job_id = job['job_id']
     #获取任务进度
     result = qcos_check_zip_job(job_id)
@@ -126,3 +130,31 @@ def get_zip(collect = Depends(check_collect_belong_user)):
         key = 'zip/'+str(collect['_id'])+'.zip'
         url = get_download_url(key)
         return {'code':200,'message':url}
+
+@router.get('/stop')
+def stop_collect(collect = Depends(check_collect_belong_user)):
+    try:
+        #将collect endtime更新为当前时间（收集结束）
+        collectdb = get_collection('collect')
+        result = collectdb.update_one({'_id':collect['_id']},{'$set':{'endtime':datetime.now()}})
+        #创建压缩任务
+        #1.创建任务
+        file = str(collect['_id'])+'/'
+        outfile = 'zip/'+str(collect['_id'])+'.zip'
+        result = qcos_add_zip_job(file=file,out=outfile)
+        if result['JobsDetail']['Code']!='Success':
+            code = 307
+        else:
+            job_id = result['JobsDetail']['JobId']
+            #2.添加(更新)到数据库
+            jobdb = get_collection('job')
+            result = jobdb.update_one({
+                'collect_id':collect['_id'],
+                'job_id':job_id
+            },{'$set':{'status':0}},upsert=True)
+            code = 200
+    except Exception as e:
+        code=310
+    finally:
+        return {'code':code,'message':errorcode[code]}
+    
