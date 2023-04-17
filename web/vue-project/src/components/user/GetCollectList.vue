@@ -12,19 +12,32 @@
                     <template v-if="scope.row.status === '已结束'">
                         <el-button size="small" type="success"
                             @click="handleDownload(scope.$index, scope.row)">下载文件</el-button>
+                        
                     </template>
                     <template v-else>
                         <el-button size="small" type="danger" @click="handleStop(scope.$index, scope.row)">停止收集</el-button>
+                        <el-button size="small" type="success"
+                            @click="copyUrl(scope.$index, scope.row)">复制链接</el-button>
                     </template>
                     <!-- <el-button size="small" @click="handleEdit(scope.$index, scope.row)">Edit</el-button> -->
                 </template>
             </el-table-column>
         </el-table>
     </div>
+    <Modal
+        v-model="showurl"
+        title="下载地址"
+        @on-ok="ok"
+        @on-cancel="cancel">
+        <a :href="downloadurl">点击下载</a>
+    </Modal>
 </template>
 <script setup>
 import { service } from '../../stores/axios.js'
 import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+let downloadurl=ref('')
+let showurl=ref(false)
 const columns = [
     {
         title: '标题',
@@ -43,12 +56,63 @@ let data = ref([])
 let total = ref(0)
 let listdata = ref([])
 
+function copyUrl(index,row){
+    const url = WEB_URL+'/public/collect/'+row['_id']
+    navigator.clipboard.writeText(url);
+    ElMessage.success('链接复制成功')
+}
+
 function handleStop(index, row) {
     const collect_id = row['_id']
-    console.log(collect_id)
+    service({
+        method: 'get',
+        url: '/collect/stop',
+        params: { collect_id: collect_id }
+    }).then(res => {
+        data = res.data
+        if (data.code != 200) {
+            ElMessage.error('停止失败' + 'code: ' + data.code + ' | message: ' + data.message)
+        } else {
+            ElMessage.success('收集表停止成功')
+            row['status'] = '已结束'
+        }
+    })
 }
 function handleDownload(index, row) {
     const collect_id = row['_id']
+    //结束收集
+    //检查压缩是否完成
+    service({
+        method: 'get',
+        url: '/collect/check_zip_job',
+        params: { collect_id: collect_id }
+    }).then(res => {
+        data = res.data
+        if (data.code != 200) {
+            ElMessage.error('获取压缩进度失败' + 'code: ' + data.code + ' | message: ' + data.message)
+        } else {
+            const process = data.message
+            if (process != '100') {
+                ElMessage.success('压缩进度：' + process + '%')
+            } else {
+                //获取下载url
+                service({
+                    method: 'get',
+                    url: '/collect/get_zip',
+                    params: { collect_id: collect_id }
+                }).then(res => {
+                    data = res.data
+                    if (data.code != 200) {
+                        ElMessage.error('获取下载地址失败' + 'code: ' + data.code + ' | message: ' + data.message)
+                    } else {
+                        downloadurl.value = data.message 
+                        showurl.value=true
+                    }
+                })
+            }
+            row['status'] = '已结束'
+        }
+    })
     console.log(collect_id)
 }
 

@@ -41,7 +41,7 @@
         <Modal v-model="modal_show" title="表单创建成功" @on-ok="ok" @on-cancel="cancel">
             <p>标题:{{ title }}</p>
             <p>结束时间:{{ endtime }}</p>
-            上传地址:<Input v-model="upload_url" readonly/>
+            上传地址:<Input @click="copyurl" v-model="upload_url" readonly/>
             
             
         </Modal>
@@ -68,6 +68,10 @@ let upload_url = ref('')
 let endtime = new Date()
 type.value = ref(route.params.type)
 
+function copyurl(){
+    navigator.clipboard.writeText(upload_url);
+    ElMessage.success('链接复制成功')
+}
 function addNeed() {
     const lens = need.value.length
     console.log(lens)
