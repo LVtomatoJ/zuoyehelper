@@ -2,11 +2,11 @@ from datetime import datetime
 import pprint
 from fastapi import APIRouter,Depends
 from pydantic import BaseModel,constr
-from ..dependencies import check_token,get_token_username
+from ..dependencies import check_token,get_token_username,check_collect_belong_user
 from ..db import get_collection
 from ..code import errorcode
 from ..config import WEB_IP,WEB_PORT
-
+from ..qcos import qcos_add_zip_job,qcos_check_zip_job,get_download_url
 #解决返回objectid报错问题
 from bson.objectid import ObjectId
 import pydantic
@@ -74,4 +74,55 @@ def get_collect_total(username:str = Depends(get_token_username)):
     total = collectdb.count_documents({'user_id':user_id})
     return {'code':200,'message':total}
     
+@router.get('/make_zip')
+def make_zip(collect = Depends(check_collect_belong_user)):
+    #1.创建任务
+    file = str(collect['_id'])+'/'
+    outfile = 'zip/'+str(collect['_id'])+'.zip'
+    result = qcos_add_zip_job(file=file,out=outfile)
+    if result['JobsDetail']['Code']!='Success':
+        code = 307
+    else:
+        job_id = result['JobsDetail']['JobId']
+        #2.添加(更新)到数据库
+        jobdb = get_collection('job')
+        result = jobdb.update_one({
+            'collect_id':collect['_id'],
+            'job_id':job_id
+        },{'$set':{'status':0}},upsert=True)
+        code = 200
+    return {'code':code,'message':errorcode[code]}
 
+@router.get('/check_zip_job')
+def check_zip_job(collect = Depends(check_collect_belong_user)):
+    #获取job_id
+    jobdb = get_collection('job')
+    job = jobdb.find_one({'collect_id':collect['_id']})
+    job_id = job['job_id']
+    #获取任务进度
+    result = qcos_check_zip_job(job_id)
+    if result['JobsDetail']['Code']!='Success':
+        code = 308
+        return {'code':code,'message':errorcode[code]}
+    else:
+        process = result['JobsDetail']['Progress']
+        #如果100则更新数据库
+        result = jobdb.update_one({
+            'job_id':job_id
+        },{'$set':{'status':1}},upsert=True)
+        return {'code':200,'message':process}
+
+@router.get('/get_zip')
+def get_zip(collect = Depends(check_collect_belong_user)):
+    #判断job状态
+    jobdb = get_collection('job')
+    job = jobdb.find_one({'collect_id':collect['_id']})
+    status = job['status']
+    if status==0:
+        code = 309
+        return {'code':309,'message':errorcode[code]}
+    else:
+        #获取url
+        key = 'zip/'+str(collect['_id'])+'.zip'
+        url = get_download_url(key)
+        return {'code':200,'message':url}

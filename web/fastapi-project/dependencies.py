@@ -46,7 +46,6 @@ def check_token(token: str = Depends(oauth2_scheme)):
 
 def get_token_username(token: str = Depends(oauth2_scheme)) -> str:
     """不验证token是否正确,仅返回token中包含的username
-
     Args:
         token (str, optional): _description_. Defaults to Depends(oauth2_scheme).
 
@@ -70,6 +69,27 @@ def check_collect_exist(collect_id: str) -> _DocumentType:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="收集表不存在"
         )
+
+def check_collect_belong_user(collect:_DocumentType=Depends(check_collect_exist),username:str=Depends(get_token_username))->_DocumentType:
+    try:
+        #获取user_id
+        userdb = get_collection('user')
+        user_id = userdb.find_one({'username':username})['_id']
+        #获取collects
+        if user_id!=collect['user_id']:
+            raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="权限不足"
+        )
+        else:
+            return collect
+        
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="权限不足"
+        )
+
 #collect need模型
 class UploadData(BaseModel):
     index:int

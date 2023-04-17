@@ -13,6 +13,9 @@ source venv/bin/activate
 ### 安装 web/requirements.txt中所包含的库
 ```
 python3 -m pip install -r requirements.txt
+
+另外
+因为腾讯官方sdk中没有部分接口所以fork了之后自己完成了需要的部分接口 需要自行下载安装哦！
 ```
 ### 启动服务（在web目录下）
 ```
