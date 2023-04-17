@@ -12,6 +12,7 @@ export default defineConfig({
     }
   },
   define:{
-    API_URI:JSON.stringify('http://127.0.0.1:8000')
+    API_URI:JSON.stringify('http://127.0.0.1:8000'),
+    WEB_URL:JSON.stringify('http://127.0.0.1:5173')
   }
 })
