@@ -77,8 +77,12 @@ def get_collect_total(username:str = Depends(get_token_username)):
 @router.get('/make_zip')
 def make_zip(collect = Depends(check_collect_belong_user)):
     #1.创建任务
-    file = str(collect['_id'])+'/'
-    outfile = 'zip/'+str(collect['_id'])+'.zip'
+    collect_id = collect['_id']
+    collectdb = get_collection('collect')
+    collect = collectdb.find_one({'_id':collect_id})
+    user_id = collect['user_id']
+    file = str(user_id)+'/'+str(collect_id)+'/'
+    outfile = str(user_id)+'/zip/'+str(collect['_id'])+'.zip'
     result = qcos_add_zip_job(file=file,out=outfile)
     if result['JobsDetail']['Code']!='Success':
         code = 307
@@ -127,7 +131,11 @@ def get_zip(collect = Depends(check_collect_belong_user)):
         return {'code':309,'message':errorcode[code]}
     else:
         #获取url
-        key = 'zip/'+str(collect['_id'])+'.zip'
+        collect_id = collect['_id']
+        collectdb = get_collection('collect')
+        collect = collectdb.find_one({'_id':collect_id})
+        user_id = collect['user_id']
+        key = str(user_id)+'/zip/'+str(collect['_id'])+'.zip'
         url = get_download_url(key)
         return {'code':200,'message':url}
 
@@ -139,8 +147,12 @@ def stop_collect(collect = Depends(check_collect_belong_user)):
         result = collectdb.update_one({'_id':collect['_id']},{'$set':{'endtime':datetime.now()}})
         #创建压缩任务
         #1.创建任务
-        file = str(collect['_id'])+'/'
-        outfile = 'zip/'+str(collect['_id'])+'.zip'
+        collect_id = collect['_id']
+        collectdb = get_collection('collect')
+        collect = collectdb.find_one({'_id':collect_id})
+        user_id = collect['user_id']
+        file = str(user_id)+'/'+str(collect['_id'])+'/'
+        outfile = str(user_id)+'/zip/'+str(collect['_id'])+'.zip'
         result = qcos_add_zip_job(file=file,out=outfile)
         if result['JobsDetail']['Code']!='Success':
             code = 307

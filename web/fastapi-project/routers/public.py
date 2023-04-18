@@ -33,7 +33,11 @@ def upload_file(uploaddata = Depends(check_upload)):
     try:
         uploaddb = get_collection('upload')
         result = uploaddb.insert_one(uploaddata)
-        sign = get_upload_url(str(uploaddata['collect_id'])+"/"+uploaddata['filename'])
+        collect_id = uploaddata['collect_id']
+        collectdb = get_collection('collect')
+        collect = collectdb.find_one({'_id':collect_id})
+        user_id = collect['user_id']
+        sign = get_upload_url(str(user_id)+"/"+str(collect_id)+"/"+uploaddata['filename'])
         code = 200
     except Exception as e:
         code = 305
@@ -42,12 +46,15 @@ def upload_file(uploaddata = Depends(check_upload)):
             return {'code':code,'message':errorcode[code]}
         else:
             return {'code':200,'message':sign,'filename':uploaddata['filename']}
-        
+
 @router.get('/check_upload')
 def update_upload_data(upload = Depends(check_upload_exist)):
     filename = upload['filename']
     collect_id = upload['collect_id']
-    key = str(collect_id)+'/'+filename
+    collectdb = get_collection('collect')
+    collect = collectdb.find_one({'_id':collect_id})
+    user_id = collect['user_id']
+    key = str(user_id)+"/"+str(collect_id)+'/'+filename
     if qcos_check_upload_exist(key):
         uploaddb = get_collection('upload')
         result = uploaddb.update_one({'filename':filename,'collect_id':collect_id},{"$set":{'status':1}})
