@@ -9,11 +9,12 @@
             </div>
             <Submit />
         </Login>
+        <Button @click="goReg" size="large" style="padding-top: 5px;" long>注册</Button>
     </div>
+    
 </template>
 <script>
 import { useLoginStore } from '../stores/login'
-import { service } from '../stores/axios.js'
 import axios from 'axios'
 
 export default {
@@ -23,7 +24,6 @@ export default {
         }
     },
     methods: {
-
         //登录操作
         handleSubmit(valid, { username, password }) {
             const store = useLoginStore()
@@ -50,6 +50,9 @@ export default {
                     this.$Message.error('网络请求失败')
                 })
             }
+        },
+        goReg(){
+            this.$router.push({'name':'reg'})
         }
     }
 }

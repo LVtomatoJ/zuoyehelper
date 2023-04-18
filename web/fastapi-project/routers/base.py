@@ -19,11 +19,6 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 #获取全局配置文件
-# with open("fastapi-project/config.json", "r", encoding="utf-8") as f:
-#     globalConfig = json.load(f)
-# SECRET_KEY = globalConfig.get('SECRET_KEY')
-# ALGORITHM = globalConfig.get('ALGORITHM')
-# ACCESS_TOKEN_EXPIRE_MINUTES = globalConfig.get('ACCESS_TOKEN_EXPIRE_MINUTES')
 from ..config import SECRET_KEY,ALGORITHM,ACCESS_TOKEN_EXPIRE_MINUTES
 
 #模型
@@ -38,6 +33,7 @@ class Reg(BaseModel):
 class RegInfo(BaseModel):
     username: str
     password: str
+    phonenumber :int
 
 
 def create_access_token(data: dict, expires_delta: timedelta|None = None):
@@ -92,11 +88,13 @@ def reg(reginfo:RegInfo):
         _type_: json
     """
     username = reginfo.username
-    password = get_password_hash(reginfo.password)
+    #检查是否存在用户
     userdb = get_collection('user')
     if userdb.find_one({'username':username}):
         code = 302
     else:
-        anser = userdb.insert_one({'username':username,'password':password})
+        password = get_password_hash(reginfo.password)
+        phonenumber = reginfo.phonenumber
+        anser = userdb.insert_one({'username':username,'password':password,'phonenumber':phonenumber})
         code = 200
     return {'code':code,'message':errorcode[code]}

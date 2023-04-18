@@ -1,5 +1,5 @@
 <script setup>
-import LoginCard from '../components/LoginCard.vue'
+import RegCard from '../components/RegCard.vue'
 </script>
 
 <template>
@@ -9,10 +9,10 @@ import LoginCard from '../components/LoginCard.vue'
     <Row>
         <Col span="4"></Col>
         <Col span="16">
-          <div style="padding-top: 200px;padding-bottom: 40px;text-align: center;font-size: 30px;">
+          <div style="padding-top: 100px;padding-bottom: 40px;text-align: center;font-size: 30px;">
         作业帮收件箱
     </div>
-          <LoginCard />
+          <RegCard />
         </Col>
         <Col span="4"></Col>
     </Row>

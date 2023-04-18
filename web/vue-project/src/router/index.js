@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
+import RegView from '../views/RegView.vue'
 import AboutView from '../views/AboutView.vue'
 import CollectView from '../views/public/CollectView.vue'
 import UserIndexView from '../views/user/UserIndexView.vue'
@@ -23,6 +24,14 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: LoginView
+    },
+    {
+      path: '/reg',
+      name: 'reg',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: RegView
     },
     {
       path: '/about',
@@ -59,7 +68,7 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   const store = useLoginStore()
-  if (!store.isLoggedIn&&to.name!=='login'&&to.name!=='home'&&to.name!=='publiccollect')
+  if (!store.isLoggedIn&&to.name!=='login'&&to.name!=='home'&&to.name!=='publiccollect'&&to.name!=='reg')
     return '/login'
 })
 
