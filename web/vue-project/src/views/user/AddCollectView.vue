@@ -41,7 +41,7 @@
         <Modal v-model="modal_show" title="表单创建成功" @on-ok="ok" @on-cancel="cancel">
             <p>标题:{{ title }}</p>
             <p>结束时间:{{ endtime }}</p>
-            上传地址:<Input @click="copyurl" v-model="upload_url" readonly/>
+            上传地址:<Input class="btn" v-model="upload_url" @click="copyurl" readonly/>
             
             
         </Modal>
@@ -56,6 +56,8 @@ import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { service } from '../../stores/axios.js'
 import { ref } from 'vue'
+import useClipboard from 'vue-clipboard3'
+const { toClipboard } = useClipboard()
 
 //获取类型
 const route = useRoute();
@@ -68,10 +70,17 @@ let upload_url = ref('')
 let endtime = new Date()
 type.value = ref(route.params.type)
 
-function copyurl(){
-    navigator.clipboard.writeText(upload_url.value);
-    ElMessage.success('链接复制成功')
-}
+
+const copyurl = async () => {
+      try {
+        await toClipboard(upload_url.value)
+        ElMessage.success('链接复制成功')
+      } catch (e) {
+        ElMessage.error('链接复制失败')
+      }
+    }
+
+
 function addNeed() {
     const lens = need.value.length
     console.log(lens)

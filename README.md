@@ -17,13 +17,17 @@ python3 -m pip install -r requirements.txt
 另外
 因为腾讯官方sdk中没有部分接口所以fork了之后自己完成了需要的部分接口 需要自行下载安装哦！
 ```
+### 安装mongodb
+https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/
+
 ### 启动服务（在web目录下）
 ```
 python3 -m uvicorn fastapi-project.main:app --reload
+python3 -m uvicorn fastapi-project.main:app --host='0.0.0.0'
 ````
 ## 前端
 ### 安装node以及所需库
-母鸡
+npm install
 ### 启动服务
 ```
 npm run dev

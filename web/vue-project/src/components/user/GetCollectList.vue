@@ -33,6 +33,8 @@
     </Modal>
 </template>
 <script setup>
+import useClipboard from 'vue-clipboard3'
+const { toClipboard } = useClipboard()
 import { service } from '../../stores/axios.js'
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
@@ -55,11 +57,17 @@ const columns = [
 let data = ref([])
 let total = ref(0)
 let listdata = ref([])
-
+const copy = async (url) => {
+      try {
+        await toClipboard(url)
+        ElMessage.success('链接复制成功')
+      } catch (e) {
+        ElMessage.error('链接复制失败')
+      }
+    }
 function copyUrl(index,row){
     const url = WEB_URL+'/public/collect/'+row['_id']
-    navigator.clipboard.writeText(url);
-    ElMessage.success('链接复制成功')
+    copy(url)
 }
 
 function handleStop(index, row) {

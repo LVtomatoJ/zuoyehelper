@@ -16,8 +16,9 @@ app.include_router(public.router)
 #跨源设置
 origins = [
     # "http://localhost:5173",
-    # "http://127.0.0.1:5173"
-    f"http://{WEB_IP}:{WEB_PORT}"
+    # "http://127.0.0.1:5173",
+    f"http://{WEB_IP}:{WEB_PORT}",
+    f"http://{WEB_IP}"
 ]
 app.add_middleware(
     CORSMiddleware,
