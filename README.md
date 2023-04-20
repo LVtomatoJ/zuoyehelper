@@ -54,8 +54,9 @@ npm run build
 ```
 
 ## web服务器
-### nginx安装
+### nginx安装以及使用
 https://nginx.org/en/linux_packages.html#Ubuntu
+https://nginx.org/en/docs/beginners_guide.html
 ### nginx配置
 ```
 cd /etc/nginx/conf.d
