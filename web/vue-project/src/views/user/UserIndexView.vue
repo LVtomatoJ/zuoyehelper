@@ -54,16 +54,7 @@
                             <Icon type="md-chatbubbles" />
                             收集列表
                             </MenuItem>
-                        </MenuGroup>
-                        <MenuGroup title="统计分析">
-                            <MenuItem name="3">
-                            <Icon type="md-heart" />
-                            用户留存
-                            </MenuItem>
-                            <MenuItem name="4">
-                            <Icon type="md-leaf" />
-                            流失用户
-                            </MenuItem>
+                    
                         </MenuGroup>
                     </Menu>
                 </div>

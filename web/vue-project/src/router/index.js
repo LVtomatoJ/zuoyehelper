@@ -6,6 +6,7 @@ import AboutView from '../views/AboutView.vue'
 import CollectView from '../views/public/CollectView.vue'
 import UserIndexView from '../views/user/UserIndexView.vue'
 import AddCollectView from '../views/user/AddCollectView.vue'
+import UpdateCollectView from '../views/user/UpdateCollectView.vue'
 import { useLoginStore } from '../stores/login'
 
 
@@ -61,6 +62,14 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: AddCollectView
+    },
+    {
+      path: '/user/updatecollect/:collect_id',
+      name: 'user_update_collect',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: UpdateCollectView
     }
 
   ]

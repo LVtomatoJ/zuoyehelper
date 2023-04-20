@@ -3,32 +3,29 @@
         <div style="display: flex;padding-top: 10px;padding-bottom: 10px;">
             <Page style=" margin: auto" :total="total" @on-change="changePage" />
         </div>
-        <el-table :data="listdata" style="width: auto" table-layout="auto">
-            <el-table-column prop="title" label="标题" />
+        <el-table :data="listdata" border style="width: 100%" table-layout="auto">
+            <el-table-column fixed prop="title" label="标题" />
             <el-table-column prop="destict" label="描述" />
-            <el-table-column prop="status" label="状态" />
-            <el-table-column label="操作">
+            <el-table-column width="70" prop="status" label="状态" />
+            <el-table-column width="200" label="操作">
                 <template #default="scope">
                     <template v-if="scope.row.status === '已结束'">
                         <el-button size="small" type="success"
-                            @click="handleDownload(scope.$index, scope.row)">下载文件</el-button>
-                        
+                            @click="handleDownload(scope.$index, scope.row)">下载</el-button>
+                            <el-button size="small" type="info"
+                            @click="goUploadList(scope.$index, scope.row)">记录</el-button>
                     </template>
                     <template v-else>
-                        <el-button size="small" type="danger" @click="handleStop(scope.$index, scope.row)">停止收集</el-button>
-                        <el-button size="small" type="success"
-                            @click="copyUrl(scope.$index, scope.row)">复制链接</el-button>
+                        <el-button size="small" type="danger" @click="handleStop(scope.$index, scope.row)">停止</el-button>
+                        <el-button size="small" type="success" @click="copyUrl(scope.$index, scope.row)">复制</el-button>
+                        <el-button size="small" type="info" @click="goUpdateCollect(scope.$index, scope.row)">修改</el-button>
                     </template>
                     <!-- <el-button size="small" @click="handleEdit(scope.$index, scope.row)">Edit</el-button> -->
                 </template>
             </el-table-column>
         </el-table>
     </div>
-    <Modal
-        v-model="showurl"
-        title="下载地址"
-        @on-ok="ok"
-        @on-cancel="cancel">
+    <Modal v-model="showurl" title="下载地址" @on-ok="ok" @on-cancel="cancel">
         <a :href="downloadurl">点击下载</a>
     </Modal>
 </template>
@@ -38,8 +35,10 @@ const { toClipboard } = useClipboard()
 import { service } from '../../stores/axios.js'
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-let downloadurl=ref('')
-let showurl=ref(false)
+import { useRouter } from 'vue-router'
+const router = useRouter();
+let downloadurl = ref('')
+let showurl = ref(false)
 const columns = [
     {
         title: '标题',
@@ -58,15 +57,21 @@ let data = ref([])
 let total = ref(0)
 let listdata = ref([])
 const copy = async (url) => {
-      try {
+    try {
         await toClipboard(url)
         ElMessage.success('链接复制成功')
-      } catch (e) {
+    } catch (e) {
         ElMessage.error('链接复制失败')
-      }
     }
-function copyUrl(index,row){
-    const url = WEB_URL+'/public/collect/'+row['_id']
+}
+function goUpdateCollect(index, row) {
+    router.push('/user/updateCollect/' + row['_id'])
+}
+function goUploadList(index, row) {
+    router.push('/user/uploadCollect/' + row['_id'])
+}
+function copyUrl(index, row) {
+    const url = WEB_URL + '/public/collect/' + row['_id']
     copy(url)
 }
 
@@ -113,8 +118,8 @@ function handleDownload(index, row) {
                     if (data.code != 200) {
                         ElMessage.error('获取下载地址失败' + 'code: ' + data.code + ' | message: ' + data.message)
                     } else {
-                        downloadurl.value = data.message 
-                        showurl.value=true
+                        downloadurl.value = data.message
+                        showurl.value = true
                     }
                 })
             }
