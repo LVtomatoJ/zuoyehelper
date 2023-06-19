@@ -40,9 +40,9 @@ def add_collect(collect:Collect,username:str = Depends(get_token_username)):
         #添加到collect表
         collectdb = get_collection('collect')
         data = collect.dict()
+        e = pytz.timezone('Asia/Shanghai')
         utctime = data['endtime']
-        server_tz = pytz.localtimezone() # 获取操作系统设置的本地时区
-        server_dt = utctime.astimezone(server_tz)
+        server_dt = e.localize(utctime)
         data['endtime'] = server_dt
         data['user_id'] = user_id
         inserted_id = collectdb.insert_one(data).inserted_id
