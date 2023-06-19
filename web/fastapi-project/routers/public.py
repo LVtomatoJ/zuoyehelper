@@ -5,6 +5,7 @@ from ..dependencies import check_collect_exist,check_upload,check_upload_exist
 from ..db import get_collection
 from ..code import errorcode
 from ..qcos import get_upload_url,qcos_check_upload_exist
+import pytz
 
 router = APIRouter(prefix='/api/public',tags=['public'])
 
@@ -25,6 +26,8 @@ class Collect(BaseModel):
 @router.get('/getcollect',response_model=Collect)
 def get_collect(collect = Depends(check_collect_exist)):
     print(collect)
+    #pymongo从数据库获取datetime会自动转换为utc这里进行转换
+    collect['endtime'] = collect['endtime'].astimezone(pytz.timezone('Asia/Shanghai'))
     return collect
 
 #上传文件记录,返回上传URL
