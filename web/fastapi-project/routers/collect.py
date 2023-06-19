@@ -10,6 +10,7 @@ from ..qcos import qcos_add_zip_job,qcos_check_zip_job,get_download_url
 #解决返回objectid报错问题
 from bson.objectid import ObjectId
 import pydantic
+import pytz
 pydantic.json.ENCODERS_BY_TYPE[ObjectId]=str
 
 
@@ -39,7 +40,10 @@ def add_collect(collect:Collect,username:str = Depends(get_token_username)):
         #添加到collect表
         collectdb = get_collection('collect')
         data = collect.dict()
-
+        utctime = data['endtime']
+        server_tz = pytz.localtimezone() # 获取操作系统设置的本地时区
+        server_dt = utctime.astimezone(server_tz)
+        data['endtime'] = server_dt
         data['user_id'] = user_id
         inserted_id = collectdb.insert_one(data).inserted_id
         code = 200
