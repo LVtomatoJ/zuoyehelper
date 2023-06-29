@@ -98,11 +98,21 @@ function onAddCollect() {
                 return
             }
         }
+        //处理时间
+        const year = endtime.getFullYear();
+        const month = (endtime.getMonth() + 1).toString().padStart(2, '0');
+        const day = endtime.getDate().toString().padStart(2, '0');
+        const hours = endtime.getHours().toString().padStart(2, '0');
+        const minutes = endtime.getMinutes().toString().padStart(2, '0');
+        const seconds = endtime.getSeconds().toString().padStart(2, '0');
+
+        const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.000Z`;
+
         service({
             method: 'post',
             url: '/collect/add',
             data: {
-                endtime: endtime.toLocaleString,
+                endtime: formattedDate,
                 type: route.params.type,
                 title: title,
                 destict: destict,
