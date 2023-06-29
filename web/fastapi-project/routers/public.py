@@ -27,7 +27,7 @@ class Collect(BaseModel):
 def get_collect(collect = Depends(check_collect_exist)):
     print(collect)
     #pymongo从数据库获取datetime会自动转换为utc这里进行转换
-    collect['endtime'] = collect['endtime'].astimezone(pytz.timezone('Asia/Shanghai'))
+    # collect['endtime'] = collect['endtime'].astimezone(pytz.timezone('Asia/Shanghai'))
     return collect
 
 #上传文件记录,返回上传URL

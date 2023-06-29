@@ -40,8 +40,8 @@ def add_collect(collect:Collect,username:str = Depends(get_token_username)):
         #添加到collect表
         collectdb = get_collection('collect')
         data = collect.dict()
-        local_dt = data['endtime'].astimezone(pytz.timezone('Asia/Shanghai'))
-        data['endtime'] = local_dt
+        #local_dt = data['endtime'].astimezone(pytz.timezone('Asia/Shanghai'))
+        #data['endtime'] = local_dt
         data['user_id'] = user_id
         inserted_id = collectdb.insert_one(data).inserted_id
         code = 200

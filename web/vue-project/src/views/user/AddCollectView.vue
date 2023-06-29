@@ -102,7 +102,7 @@ function onAddCollect() {
             method: 'post',
             url: '/collect/add',
             data: {
-                endtime: endtime,
+                endtime: endtime.toLocaleString,
                 type: route.params.type,
                 title: title,
                 destict: destict,
